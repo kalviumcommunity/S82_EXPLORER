@@ -1,8 +1,5 @@
-# 🌍 Explorer  
 
-**Explorer** is a location-based mobile app designed to enhance travel experiences by helping users discover nearby attractions, top-rated hotels, and must-try local delicacies. Using GPS, the app provides real-time, personalized recommendations based on the user’s location.  
 
----
 
 ## 🚀 Features  
 
@@ -61,3 +58,4 @@ This project also serves as an opportunity to:
 ✅ Integrate **third-party APIs** like Google Maps & Yelp 🔗  
 ✅ Build an engaging **mobile user experience** 📲  
 
+---

@@ -28,13 +28,26 @@ app.get("/",(req,res)=>{
   }
 })
 
-app.post('/objects', async (req, res) => {
+const PlaceModel = require('./models/Place'); // Make sure the path is correct
+
+app.post('/places', async (req, res) => {
+  const { name, description, ingredients, userId } = req.body; // Assuming userId is passed from frontend
+
   try {
-    res.status(201).json(await new ObjectModel(req.body).save());
+    const newPlace = new PlaceModel({
+      name,
+      description,
+      ingredients,
+      created_by: userId, 
+    });
+
+    await newPlace.save();
+    res.status(201).json(newPlace);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
+
 
 app.get('/objects', async (req, res) => {
   try {

@@ -6,13 +6,16 @@ const app = express();
 const PORT = 5000;
 
 app.use(express.json());
-const moodRoutes = require('./routes/routes');
-app.use('/api', moodRoutes);
+const placeRoutes = require('./routes/routes');
+app.use('/api', placeRoutes);
 
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })  
   .then(() => console.log('Connected to Database'))
   .catch(console.error);
+
+
+const validateUser = require('./middlewares/validateUser');
 
 const ObjectModel = require('./schema');
 app.get("/",(req,res)=>{
@@ -43,4 +46,4 @@ app.get('/objects', async (req, res) => {
 
 app.get('/ping', (req, res) => res.send('hello world'));
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

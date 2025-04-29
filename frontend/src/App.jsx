@@ -1,8 +1,16 @@
 import React from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import FoodGuidePage from "./pages/FoodGuidePage"; 
-
 import PlaceCard from "./components/PlaceCard";
+import UserPlaces from "./pages/UserPlaces"; // 👈 NEW import
+
+function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
 
 function App() {
   const navigate = useNavigate();
@@ -10,6 +18,7 @@ function App() {
   const handleFeatureClick = (feature) => {
     if (feature === "food") navigate("/food-guide");
     if (feature === "reviews") navigate("/traveler-reviews");
+    if (feature === "user-places") navigate("/user-places"); // 👈 NEW feature
   };
 
   return (
@@ -62,8 +71,9 @@ function App() {
                 />
                 <FeatureCard
                   color="from-rose-400 to-pink-500"
-                  title="❤️ Favorites"
-                  description="Save and revisit your favorite places and food stops."
+                  title="👤 User Places"
+                  description="See places created by users"
+                  onClick={() => handleFeatureClick("user-places")}
                 />
               </div>
             </section>
@@ -87,6 +97,7 @@ function App() {
       />
       <Route path="/traveler-reviews" element={<PlaceCard />} />
       <Route path="/food-guide" element={<FoodGuidePage />} />
+      <Route path="/user-places" element={<UserPlaces />} /> {/* ✅ New route */}
     </Routes>
   );
 }
@@ -101,4 +112,4 @@ const FeatureCard = ({ title, description, color, onClick }) => (
   </div>
 );
 
-export default App;
+export default AppWrapper;

@@ -1,65 +1,49 @@
 const express = require('express');
-const mysql = require('mysql2');
-require('dotenv').config();
-const cors = require('cors');
-
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 5000;
 
-app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: process.env.DB_USER,       // your mysql username from .env
-  password: process.env.DB_PASSWORD, // your mysql password from .env
-  database: process.env.DB_NAME    // your database name from .env
-});
+const USERS = [
+  { username: "user1", password: "pass1" },
+  { username: "user2", password: "pass2" },
+];
 
 
-app.get("/", (req, res) => {
-  db.query('SELECT 1', (err) => {
-    if (err) {
-      console.error('Database not connected');
-      return res.send('Not Connected to Database');
-    }
-    console.log('Connected to Database');
-    res.send('Connected to Database');
+app.post('/auth/login', (req, res) => {
+  const { username, password } = req.body;
+
+  const user = USERS.find(u => u.username === username && u.password === password);
+
+  if (!user) {
+    return res.status(401).json({ message: "Invalid username or password" });
+  }
+
+  res.cookie('username', username, {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: false 
   });
+
+  res.json({ message: `Logged in as ${username}` });
 });
 
 
-app.get('/api/users', (req, res) => {
-  db.query('SELECT * FROM users', (err, result) => {
-    if (err) return res.status(500).json({ message: err.message });
-    res.json(result);
-  });
-});
-
-app.post('/api/places', (req, res) => {
-  const { name, location, created_by } = req.body;
-
-  const sql = 'INSERT INTO places (name, location, created_by) VALUES (?, ?, ?)';
-  db.query(sql, [name, location, created_by], (err, result) => {
-    if (err) return res.status(500).json({ message: err.message });
-    res.status(201).json({ id: result.insertId, name, location, created_by });
-  });
+app.post('/auth/logout', (req, res) => {
+  res.clearCookie('username');
+  res.json({ message: 'Logged out successfully' });
 });
 
 
-app.get('/api/places/user/:userId', (req, res) => {
-  const userId = req.params.userId;
-
-  const sql = 'SELECT * FROM places WHERE created_by = ?';
-  db.query(sql, [userId], (err, result) => {
-    if (err) return res.status(500).json({ message: err.message });
-    res.json(result);
-  });
+app.get('/auth/check', (req, res) => {
+  const { username } = req.cookies;
+  if (!username) {
+    return res.status(401).json({ message: 'Not logged in' });
+  }
+  res.json({ message: `You are logged in as ${username}` });
 });
-
-
-app.get('/ping', (req, res) => res.send('hello world'));
-
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
